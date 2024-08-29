@@ -87,7 +87,12 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             value={form.password}
             required
           />
-          <Button type="submit" className="w-full" size={"lg"}>
+          <Button
+            type="submit"
+            className="w-full"
+            size={"lg"}
+            disabled={pendding}
+          >
             Submit
           </Button>
         </form>
