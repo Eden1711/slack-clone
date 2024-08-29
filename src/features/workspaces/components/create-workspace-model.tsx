@@ -42,7 +42,7 @@ export const CreateWorkspaceModel = () => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent aria-describedby="s">
         <DialogHeader>
-          <DialogTitle>Add a workspace</DialogTitle>
+          <DialogTitle>Add a workspace </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
