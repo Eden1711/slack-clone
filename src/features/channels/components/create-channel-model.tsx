@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useCreateChannelModal } from "../store/use-create-channel-modal";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,12 +6,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useCreateChannel } from "../api/use-create-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { useCreateChannel } from "../api/use-create-workspace";
+import { useCreateChannelModal } from "../store/use-create-channel-modal";
 
 export const CreateChannelModel = () => {
+  const router = useRouter();
   const workspaceId = useWorkspaceId();
   const [open, setOpen] = useCreateChannelModal();
   const [name, setName] = useState("");
@@ -33,8 +34,13 @@ export const CreateChannelModel = () => {
     mutate(
       { name, workspaceId },
       {
-        onSuccess() {
-          toast.success("Channel created");
+        onSuccess: (id) => {
+          console.log(id);
+          console.log(
+            "Navigating to:",
+            `/workspace/${workspaceId}/channel/${id}`
+          );
+          router.push(`/workspace/${workspaceId}/channel/${id}`);
           handleClose();
         },
       }
