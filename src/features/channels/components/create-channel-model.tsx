@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useCreateChannel } from "../api/use-create-workspace";
+import { useCreateChannel } from "../api/use-create-channel";
 import { useCreateChannelModal } from "../store/use-create-channel-modal";
+import { toast } from "sonner";
 
 export const CreateChannelModel = () => {
   const router = useRouter();
@@ -35,11 +36,7 @@ export const CreateChannelModel = () => {
       { name, workspaceId },
       {
         onSuccess: (id) => {
-          console.log(id);
-          console.log(
-            "Navigating to:",
-            `/workspace/${workspaceId}/channel/${id}`
-          );
+          toast.success("Channel created");
           router.push(`/workspace/${workspaceId}/channel/${id}`);
           handleClose();
         },

@@ -1,6 +1,7 @@
 "use client";
 import { useGetChannels } from "@/features/channels/api/use-get-channel";
 import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
+import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { Loader, TriangleAlert } from "lucide-react";
@@ -13,6 +14,10 @@ const WorkspacePage = () => {
 
   const [open, setOpen] = useCreateChannelModal();
 
+  const { data: member, isLoading: memberLoading } = useCurrentMember({
+    workspaceId,
+  });
+
   const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({
     id: workspaceId,
   });
@@ -22,14 +27,22 @@ const WorkspacePage = () => {
   });
 
   const channelId = useMemo(() => channels?.[0]?._id, [channels]);
+
+  const isAdmin = useMemo(() => member?.role === "admin", [member?.role]);
   useEffect(() => {
-    if (workspaceLoading || channelsLoading || !workspace) {
+    if (
+      workspaceLoading ||
+      channelsLoading ||
+      memberLoading ||
+      !member ||
+      !workspace
+    ) {
       return;
     }
 
     if (channelId) {
       router.push(`/workspace/${workspaceId}/channel/${channelId}`);
-    } else if (!open) {
+    } else if (!open && isAdmin) {
       setOpen(true);
     }
   }, [
@@ -41,9 +54,12 @@ const WorkspacePage = () => {
     setOpen,
     router,
     workspaceId,
+    member,
+    memberLoading,
+    isAdmin,
   ]);
 
-  if (workspaceLoading || channelsLoading) {
+  if (workspaceLoading || channelsLoading || memberLoading) {
     return (
       <div className="h-full flex flex-1 items-center justify-center flex-col gap-2">
         <Loader className="animate-spin size-6 text-muted-foreground" />
@@ -51,13 +67,18 @@ const WorkspacePage = () => {
     );
   }
 
-  if (!workspace) {
+  if (!workspace || !member) {
     <div className="h-full flex flex-1 items-center justify-center flex-col gap-2">
-      <TriangleAlert className="animate-spin size-6 text-muted-foreground" />
+      <TriangleAlert className=" size-6 text-muted-foreground" />
       <span className="text-sm text-muted-foreground">Workspace no found</span>
     </div>;
   }
-  return null;
+  return (
+    <div className="h-full flex flex-1 items-center justify-center flex-col gap-2">
+      <TriangleAlert className=" size-6 text-muted-foreground" />
+      <span className="text-sm text-muted-foreground">Channel not found</span>
+    </div>
+  );
 };
 
 export default WorkspacePage;
